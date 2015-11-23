@@ -371,6 +371,30 @@ helpers.createExternalProposalOpts = function(toAddress, amount, signingKey, mor
   return helpers.createProposalOpts(Model.TxProposal.Types.EXTERNAL, outputs, signingKey, moreOpts, inputs);
 };
 
+
+helpers.createStandardProposalOpts = function(outputs, moreOpts, inputs) {
+  _.each(outputs, function(output) {
+    output.amount = helpers.toSatoshi(output.amount);
+  });
+
+  var opts = {
+    type: Model.TxProposal.Types.STANDARD,
+    outputs: outputs,
+    inputs: inputs || [],
+  };
+
+  if (moreOpts) {
+    moreOpts = _.pick(moreOpts, ['feePerKb', 'customData', 'message']);
+    opts = _.assign(opts, moreOpts);
+  }
+
+  opts = _.defaults(opts, {
+    message: null
+  });
+
+  return opts;
+};
+
 helpers.createProposalOpts = function(type, outputs, signingKey, moreOpts, inputs) {
   _.each(outputs, function(output) {
     output.amount = helpers.toSatoshi(output.amount);
@@ -383,9 +407,7 @@ helpers.createProposalOpts = function(type, outputs, signingKey, moreOpts, input
   };
 
   if (moreOpts) {
-    moreOpts = _.chain(moreOpts)
-      .pick(['feePerKb', 'customData', 'message'])
-      .value();
+    moreOpts = _.pick(moreOpts, ['feePerKb', 'customData', 'message']);
     opts = _.assign(opts, moreOpts);
   }
 
