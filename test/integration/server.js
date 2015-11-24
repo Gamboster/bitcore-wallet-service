@@ -2325,7 +2325,7 @@ describe('Wallet service', function() {
       });
     });
 
-    it.only('should create a tx', function(done) {
+    it('should create a tx', function(done) {
       helpers.stubUtxos(server, wallet, [1, 2], function() {
         var txOpts = helpers.createStandardProposalOpts([{
           toAddress: '18PzpUFkFZE8zKWUPvfykkTxmB9oMR8qP7',
@@ -2344,8 +2344,34 @@ describe('Wallet service', function() {
           tx.amount.should.equal(helpers.toSatoshi(0.8));
           server.getPendingTxs({}, function(err, txs) {
             should.not.exist(err);
-            txs.length.should.be.empty;
+            txs.should.be.empty;
             done();
+          });
+        });
+      });
+    });
+
+    it.only('should be able to send tx proposal', function(done) {
+      helpers.stubUtxos(server, wallet, [1, 2], function() {
+        var txOpts = helpers.createStandardProposalOpts([{
+          toAddress: '18PzpUFkFZE8zKWUPvfykkTxmB9oMR8qP7',
+          amount: 0.8
+        }], {
+          message: 'some message',
+          customData: 'some custom data',
+        });
+        server.createTx2(txOpts, function(err, tx) {
+          should.not.exist(err);
+          should.exist(tx);
+          server.publishTx({
+            txProposalId: tx.id
+          }, function(err) {
+            should.not.exist(err);
+            server.getPendingTxs({}, function(err, txs) {
+              should.not.exist(err);
+              txs.length.should.equal(1);
+              done();
+            });
           });
         });
       });
