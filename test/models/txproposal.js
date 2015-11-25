@@ -10,7 +10,7 @@ var Bitcore = require('bitcore-lib');
 describe('TXProposal', function() {
 
   describe('#create', function() {
-    it('should create a TxProposal', function() {
+    it.only('should create a TxProposal', function() {
       var txp = TxProposal.create(aTxpOpts());
       should.exist(txp);
       should.exist(txp.toAddress);
@@ -77,21 +77,19 @@ describe('TXProposal', function() {
     });
     it('should handle multiple-outputs', function() {
       var x = TxProposal.fromObj(aTXP(TxProposal.Types.MULTIPLEOUTPUTS));
-      var totalOutput = 0;
-      _.each(x.outputs, function(o) {
-        totalOutput += o.amount
-      });
+      var totalOutput = _.sum(x.outputs, 'amount');
       x.getTotalAmount().should.equal(totalOutput);
     });
     it('should handle external', function() {
       var x = TxProposal.fromObj(aTXP(TxProposal.Types.EXTERNAL));
-      var totalOutput = 0;
-      _.each(x.outputs, function(o) {
-        totalOutput += o.amount
-      });
+      var totalOutput = _.sum(x.outputs, 'amount');
       x.getTotalAmount().should.equal(totalOutput);
     });
-
+    it('should handle standard', function() {
+      var x = TxProposal.fromObj(aTXP(TxProposal.Types.EXTERNAL));
+      var totalOutput = _.sum(x.outputs, 'amount');
+      x.getTotalAmount().should.equal(totalOutput);
+    });
   });
 
   describe('#sign', function() {
@@ -219,7 +217,7 @@ var aTXP = function(type) {
     "outputOrder": [0, 1],
     "fee": 10000,
   };
-  if (type == TxProposal.Types.MULTIPLEOUTPUTS) {
+  if (type == TxProposal.Types.MULTIPLEOUTPUTS || type == TxProposal.Types.EXTERNAL || type == TxProposal.Types.STANDARD) {
     txp.outputs = [{
       toAddress: "18PzpUFkFZE8zKWUPvfykkTxmB9oMR8qP7",
       amount: 10000000,

@@ -2351,7 +2351,7 @@ describe('Wallet service', function() {
       });
     });
 
-    it.only('should be able to send tx proposal', function(done) {
+    it('should be able to publish tx proposal', function(done) {
       helpers.stubUtxos(server, wallet, [1, 2], function() {
         var txOpts = helpers.createStandardProposalOpts([{
           toAddress: '18PzpUFkFZE8zKWUPvfykkTxmB9oMR8qP7',
@@ -2364,7 +2364,10 @@ describe('Wallet service', function() {
           should.not.exist(err);
           should.exist(tx);
           server.publishTx({
-            txProposalId: tx.id
+            txProposalId: tx.id,
+            proposalSignature: 'dummy',
+            proposalSignaturePubKey: 'dummy',
+            proposalSignaturePubKeySig: 'dummy',
           }, function(err) {
             should.not.exist(err);
             server.getPendingTxs({}, function(err, txs) {
@@ -2373,6 +2376,21 @@ describe('Wallet service', function() {
               done();
             });
           });
+        });
+      });
+    });
+    it('should fail to publish non-existent tx proposal', function(done) {
+      server.publishTx({
+        txProposalId: 'wrong-id',
+        proposalSignature: 'dummy',
+        proposalSignaturePubKey: 'dummy',
+        proposalSignaturePubKeySig: 'dummy',
+      }, function(err) {
+        should.exist(err);
+        server.getPendingTxs({}, function(err, txs) {
+          should.not.exist(err);
+          txs.should.be.empty;
+          done();
         });
       });
     });
