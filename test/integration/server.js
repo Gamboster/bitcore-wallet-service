@@ -3616,20 +3616,6 @@ describe('Wallet service', function() {
           });
         });
       });
-    });
-  });
-
-  describe('#createTx backoff time', function() {
-    var server, wallet, txid;
-
-    beforeEach(function(done) {
-      helpers.createAndJoinWallet(2, 2, function(s, w) {
-        server = s;
-        wallet = w;
-        helpers.stubUtxos(server, wallet, _.range(2, 6), function() {
-          done();
-        });
-      });
       it('should ignore small utxos if fee is higher', function(done) {
         helpers.stubUtxos(server, wallet, [].concat(_.times(10, function() {
           return '30bit';
