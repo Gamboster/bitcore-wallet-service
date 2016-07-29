@@ -5947,7 +5947,7 @@ describe('Wallet service', function() {
               should.exist(txs);
               var s = h.slice(i, i + 7);
               _.pluck(txs, 'txid').should.deep.equal(_.pluck(s, 'txid'));
-              fromCache.should.equal(i >= Defaults.CONFIRMATIONS_TO_START_CACHING && i < 200);
+              fromCache.should.equal(i >= Defaults.CONFIRMATIONS_TO_START_CACHING);
               next();
             });
           }, done);
@@ -5970,17 +5970,17 @@ describe('Wallet service', function() {
             next();
           });
         }, function() {
-          async.eachSeries(_.range(0, 190, 7), function(i, next) {
+          // Ask more that cached.
+          async.eachSeries(_.range(0, 210, 5), function(i, next) {
             server.getTxHistory({
               skip: i,
               limit: 7,
             }, function(err, txs, fromCache) {
               should.not.exist(err);
               should.exist(txs);
-              txs.length.should.equal(7);
-              var s = h.slice(i, i + 7);
+              var s = h.slice(i, i + 5);
               _.pluck(txs, 'txid').should.deep.equal(_.pluck(s, 'txid'));
-              fromCache.should.equal(i >= Defaults.CONFIRMATIONS_TO_START_CACHING);
+              fromCache.should.equal(i >= Defaults.CONFIRMATIONS_TO_START_CACHING && i < 200);
               next();
             });
           }, done);
