@@ -5970,7 +5970,7 @@ describe('Wallet service', function() {
             next();
           });
         }, function() {
-          // Ask more that cached.
+          // Ask more than cached.
           async.eachSeries(_.range(0, 210, 7), function(i, next) {
             server.getTxHistory({
               skip: i,
